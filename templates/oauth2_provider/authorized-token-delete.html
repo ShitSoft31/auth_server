@@ -1,0 +1,52 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% block title %}Revoke Access{% endblock %}
+{% block page_title %}Revoke Access{% endblock %}
+{% block page_description %}Confirm the removal of access permissions.{% endblock %}
+
+{% block content %}
+    <div class="max-w-lg bg-[#1a1a1a] border border-neutral-800 rounded-xl p-6 shadow-sm">
+
+        <!-- Warning Icon & Title -->
+        <div class="flex items-start space-x-4">
+            <div class="flex-shrink-0 w-10 h-10 bg-red-950/30 border border-red-900/50 rounded-full flex items-center justify-center text-red-500">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-medium text-white tracking-tight">Are you absolutely sure?</h3>
+                <p class="text-sm text-neutral-400 mt-1.5 leading-relaxed">
+                    You are about to revoke access for
+                    <strong class="text-neutral-200">{{ object.application.name|default:"this application" }}</strong>.
+                    It will no longer be able to access your ShitSoft account data or perform actions on your behalf.
+                    You can always reauthorize it later if needed.
+                </p>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="mt-8 flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-3">
+            <form method="post" action="">
+                {% csrf_token %}
+                <div class="flex flex-col-reverse sm:flex-row w-full sm:w-auto gap-3 sm:gap-3">
+
+                    <!-- Cancel Button -->
+                    <a href="{% url 'oauth2_provider:authorized-token-list' %}"
+                       class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-neutral-300 bg-transparent border border-neutral-700 rounded-lg hover:bg-neutral-800 hover:text-white transition-colors focus:outline-none w-full sm:w-auto">
+                        Cancel
+                    </a>
+
+                    <!-- Confirm Button -->
+                    <button type="submit"
+                            class="inline-flex items-center justify-center px-4 py-2.5 text-sm font-medium text-white bg-red-600 border border-red-600 rounded-lg hover:bg-red-700 hover:border-red-700 transition-colors focus:outline-none focus:ring-2 focus:ring-red-600 focus:ring-offset-2 focus:ring-offset-[#1a1a1a] w-full sm:w-auto shadow-sm">
+                        Yes, Revoke Access
+                    </button>
+
+                </div>
+            </form>
+        </div>
+
+    </div>
+{% endblock %}

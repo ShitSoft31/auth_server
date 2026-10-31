@@ -1,0 +1,65 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% block title %}Authorized Applications{% endblock %}
+{% block page_title %}Authorized Applications{% endblock %}
+{% block page_description %}Third-party applications that have access to your ShitSoft account.{% endblock %}
+
+{% block content %}
+    <div class="space-y-6">
+
+        {% if object_list %}
+            <div class="grid grid-cols-1 gap-4">
+                {% for token in object_list %}
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between p-5 bg-[#1a1a1a] border border-neutral-800 rounded-lg hover:border-neutral-700 transition-colors">
+
+                        <!-- Application Info -->
+                        <div class="flex items-start space-x-4 mb-4 sm:mb-0">
+                            <!-- Placeholder App Icon -->
+                            <div class="flex-shrink-0 w-10 h-10 bg-[#222] border border-neutral-700 rounded-md flex items-center justify-center text-neutral-400">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path>
+                                </svg>
+                            </div>
+
+                            <div>
+                                <h3 class="text-base font-medium text-white">{{ token.application.name }}</h3>
+
+                                <div class="mt-1 flex flex-col sm:flex-row sm:items-center text-xs text-neutral-500 space-y-1 sm:space-y-0 sm:space-x-3">
+                                    <span class="flex items-center">
+                                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                        Authorized on {{ token.created|date:"M d, Y" }}
+                                    </span>
+
+                                    {% if token.scopes %}
+                                        <span class="hidden sm:inline text-neutral-700">•</span>
+                                        <span class="flex items-center text-neutral-400">
+                                            Scopes: {{ token.scopes }}
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Button (Revoke) -->
+                        <div class="flex-shrink-0 sm:ml-4">
+                            <a href="{% url 'oauth2_provider:authorized-token-delete' pk=token.pk %}"
+                               class="inline-flex items-center justify-center w-full sm:w-auto px-4 py-2 text-sm font-medium text-red-400 bg-red-950/20 border border-red-900/30 rounded-md hover:bg-red-950/40 hover:border-red-900/50 transition-colors focus:outline-none focus:ring-2 focus:ring-red-900 focus:ring-offset-2 focus:ring-offset-[#1a1a1a]">
+                                Revoke Access
+                            </a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Empty State -->
+            <div class="text-center py-12 px-4 border border-dashed border-neutral-800 rounded-lg bg-[#151515]">
+                <div class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-neutral-900 mb-4">
+                    <svg class="w-6 h-6 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                </div>
+                <h3 class="text-sm font-medium text-white mb-1">No Authorized Applications</h3>
+                <p class="text-sm text-neutral-500">You haven't granted access to any third-party applications yet.</p>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
