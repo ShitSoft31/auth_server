@@ -1,36 +1,70 @@
 from django.shortcuts import render, redirect
+from django.contrib import messages
 from django.contrib.auth import login
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.permissions import AllowAny, IsAuthenticated
+from rest_framework.views import APIView
 
-from .forms import RegisterForm
+from .forms import RegisterForm, SettingsForm
 
 
-@api_view(["GET", "POST"])
-@permission_classes([AllowAny])
-def register(request):
-    next_url = request.GET.get("next") or request.POST.get("next", "")
+class RegisterView(APIView):
+    permission_classes = [AllowAny]
 
-    if request.method == "POST":
+    def get(self, request):
+        return self._render_form(request, RegisterForm())
+
+    def post(self, request):
         form = RegisterForm(request.POST)
 
         if form.is_valid():
             user = form.save()
             login(request, user)
 
-            if next_url:
-                return redirect(next_url)
+            return redirect(self._get_next_url(request) or "login")
 
-            return redirect("login")
+        return self._render_form(request, form)
 
-    else:
-        form = RegisterForm()
+    def _get_next_url(self, request):
+        return request.GET.get("next") or request.POST.get("next", "")
 
-    return render(
-        request,
-        "registration/register.html",
-        {
-            "form": form,
-            "next": next_url,
-        },
-    )
+    def _render_form(self, request, form):
+        return render(
+            request,
+            "registration/register.html",
+            {
+                "form": form,
+                "next": self._get_next_url(request),
+            },
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class SettingsView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        return self._render_form(request, SettingsForm(instance=request.user))
+
+    def post(self, request):
+        form = SettingsForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Successfully updated!")
+
+            return redirect("settings")
+
+        return self._render_form(request, form)
+
+    def _render_form(self, request, form):
+        return render(
+            request,
+            "account/settings.html",
+            {
+                "form": form,
+            },
+        )

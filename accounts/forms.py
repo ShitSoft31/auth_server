@@ -31,3 +31,9 @@ class RegisterForm(forms.ModelForm):
             user.save()
 
         return user
+
+
+class SettingsForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ["username", "email", "first_name", "last_name", "bio"]

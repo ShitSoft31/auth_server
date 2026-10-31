@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}User Dashboard{% endblock %} | ShitSoft</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="bg-[#0a0a0a] text-gray-200 min-h-screen flex flex-col md:flex-row antialiased">
+
+    <!-- Mobile Header (Visible only on mobile devices) -->
+    <div class="md:hidden flex items-center justify-between bg-[#121212] border-b border-neutral-800 p-4 sticky top-0 z-50">
+        <span class="text-lg font-semibold text-white tracking-tight">ShitSoft Dashboard</span>
+        <button id="mobile-menu-btn" class="text-neutral-400 hover:text-white focus:outline-none transition-colors">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+        </button>
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside id="sidebar" class="hidden md:flex flex-col w-full md:w-64 bg-[#121212] border-r border-neutral-800 md:h-screen md:sticky top-0 z-40">
+        <!-- Logo / Title -->
+        <div class="p-6 hidden md:block">
+            <h1 class="text-xl font-semibold tracking-tight text-white">ShitSoft Dashboard</h1>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-4 py-4 space-y-1.5 overflow-y-auto">
+
+            <p class="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-4 first:mt-0">Account</p>
+
+            <a href="{% url 'settings' %}" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-neutral-300 hover:text-white hover:bg-[#1a1a1a] transition-colors group">
+                <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                Settings
+            </a>
+
+            <p class="px-3 text-xs font-semibold text-neutral-500 uppercase tracking-wider mb-2 mt-6">Authorization</p>
+
+            <a href="" class="flex items-center px-3 py-2.5 text-sm font-medium rounded-lg text-neutral-300 hover:text-white hover:bg-[#1a1a1a] transition-colors group">
+                <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-neutral-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                Authorized Applications
+            </a>
+        </nav>
+
+        <!-- User Profile & Logout -->
+        <div class="p-4 border-t border-neutral-800">
+            <div class="mb-4 px-3">
+                <p class="text-sm font-medium text-white truncate">{{ request.user.username|default:"User" }}</p>
+                <p class="text-xs text-neutral-500 truncate">{{ request.user.email }}</p>
+            </div>
+
+            <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit" class="flex items-center w-full px-3 py-2 text-sm font-medium rounded-lg text-neutral-400 hover:text-red-400 hover:bg-red-950/30 transition-colors group">
+                    <svg class="w-5 h-5 mr-3 text-neutral-500 group-hover:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Log Out
+                </button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 flex flex-col min-h-0 overflow-y-auto">
+        <div class="p-6 md:p-10 max-w-5xl mx-auto w-full">
+
+            <!-- Dynamic Page Header -->
+            <div class="mb-8">
+                <h2 class="text-2xl font-semibold text-white tracking-tight">
+                    {% block page_title %}Dashboard{% endblock %}
+                </h2>
+                <div class="text-sm text-neutral-400 mt-1.5">
+                    {% block page_description %}Manage your settings across the ShitSoft ecosystem.{% endblock %}
+                </div>
+            </div>
+
+            <!-- Content Card -->
+            <div class="bg-[#121212] border border-neutral-800 rounded-xl p-6 shadow-2xl">
+                {% block content %}
+                    <!-- Application lists, tokens, or account forms will be injected here -->
+                {% endblock %}
+            </div>
+
+        </div>
+    </main>
+
+    <!-- Mobile Menu Toggle Script -->
+    <script>
+        const mobileMenuBtn = document.getElementById('mobile-menu-btn');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileMenuBtn.addEventListener('click', () => {
+            sidebar.classList.toggle('hidden');
+            sidebar.classList.toggle('flex');
+
+            // Adjust the sidebar height according to the screen size when the mobile menu is opened
+            if (sidebar.classList.contains('flex')) {
+                sidebar.classList.add('h-[calc(100vh-65px)]', 'border-b');
+            } else {
+                sidebar.classList.remove('h-[calc(100vh-65px)]', 'border-b');
+            }
+        });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

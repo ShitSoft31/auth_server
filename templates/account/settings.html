@@ -1,0 +1,109 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% block title %}Account Settings{% endblock %}
+{% block page_title %}Account Settings{% endblock %}
+{% block page_description %}Manage your personal information and profile details.{% endblock %}
+
+{% block content %}
+
+    <!-- Success/Error Messages (Django Messages Framework) -->
+    {% if messages %}
+        <div class="mb-6 space-y-2">
+            {% for message in messages %}
+                <div class="p-3 rounded-lg text-sm border
+                    {% if message.tags == 'success' %}
+                        bg-green-950/30 border-green-900/50 text-green-400
+                    {% elif message.tags == 'error' %}
+                        bg-red-950/30 border-red-900/50 text-red-400
+                    {% else %}
+                        bg-neutral-800/50 border-neutral-700 text-neutral-300
+                    {% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- Profile Update Form -->
+    <form method="post" action="" class="space-y-6">
+        {% csrf_token %}
+
+        <!-- General Form Errors -->
+        {% if form.non_field_errors %}
+            <div class="bg-red-950/30 border border-red-900/50 rounded-lg p-3 text-sm text-red-400">
+                {% for error in form.non_field_errors %}
+                    <p>• {{ error }}</p>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Username -->
+            <div class="space-y-1.5">
+                <label for="id_username" class="block text-sm font-medium text-neutral-300">Username</label>
+                <input type="text" name="username" id="id_username"
+                    value="{{ form.username.value|default:user.username }}" required
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm">
+                {% if form.username.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ form.username.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-1.5">
+                <label for="id_email" class="block text-sm font-medium text-neutral-300">Email Address</label>
+                <input type="email" name="email" id="id_email"
+                    value="{{ form.email.value|default:user.email }}" required
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm">
+                {% if form.email.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ form.email.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- First Name -->
+            <div class="space-y-1.5">
+                <label for="id_first_name" class="block text-sm font-medium text-neutral-300">First Name</label>
+                <input type="text" name="first_name" id="id_first_name"
+                    value="{{ form.first_name.value|default:user.first_name|default:'' }}"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm">
+                {% if form.first_name.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ form.first_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+
+            <!-- Last Name -->
+            <div class="space-y-1.5">
+                <label for="id_last_name" class="block text-sm font-medium text-neutral-300">Last Name</label>
+                <input type="text" name="last_name" id="id_last_name"
+                    value="{{ form.last_name.value|default:user.last_name|default:'' }}"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm">
+                {% if form.last_name.errors %}
+                    <p class="text-xs text-red-400 mt-1">{{ form.last_name.errors.0 }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Divider -->
+        <div class="border-t border-neutral-800 my-6"></div>
+
+        <!-- Bio (Full Width) -->
+        <div class="space-y-1.5">
+            <label for="id_bio" class="block text-sm font-medium text-neutral-300">Biography (Bio)</label>
+            <p class="text-xs text-neutral-500 mb-2">A short description about yourself that will be displayed on your profile.</p>
+            <textarea name="bio" id="id_bio" rows="4"
+                class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm resize-y">{{ form.bio.value|default:user.bio|default:'' }}</textarea>
+            {% if form.bio.errors %}
+                <p class="text-xs text-red-400 mt-1">{{ form.bio.errors.0 }}</p>
+            {% endif %}
+        </div>
+
+        <!-- Submit Section -->
+        <div class="flex justify-end pt-4">
+            <button type="submit"
+                class="bg-white text-black hover:bg-neutral-200 font-medium rounded-lg px-5 py-2.5 transition-colors text-sm shadow-sm">
+                Save Changes
+            </button>
+        </div>
+
+    </form>
+{% endblock %}
