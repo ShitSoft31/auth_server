@@ -1,2 +1,3 @@
-# auth_server
+# Shitsoft Central Auth Server
+
 Shiftsoft central authorization and authentication server
