@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In | ShitSoft Auth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0a0a0a] text-gray-200 min-h-screen flex items-center justify-center p-4 antialiased">
+
+    <div class="w-full max-w-sm bg-[#121212] border border-neutral-800 rounded-xl shadow-2xl p-8">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-2xl font-semibold tracking-tight text-white">Log In - ShitSoft</h1>
+            <p class="text-sm text-neutral-400 mt-1.5">Log in the ecosystem</p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" action="{% url 'login' %}" class="space-y-5">
+            {% csrf_token %}
+
+            <!-- OAuth2 Redirect Context -->
+            {% if next %}
+                <input type="hidden" name="next" value="{{ next }}">
+            {% endif %}
+
+            <!-- Error Handling -->
+            {% if form.errors %}
+                <div class="bg-red-950/30 border border-red-900/50 rounded-lg p-3 text-sm text-red-400">
+                    Username or password is incorrect.
+                </div>
+            {% endif %}
+
+            <!-- Username Field -->
+            <div class="space-y-1.5">
+                <label for="id_username" class="block text-sm font-medium text-neutral-300">Username</label>
+                <input type="text" name="username" id="id_username" required autofocus
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm placeholder-neutral-600">
+            </div>
+
+            <!-- Password Field -->
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <label for="id_password" class="block text-sm font-medium text-neutral-300">Password</label>
+                </div>
+                <input type="password" name="password" id="id_password" required
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm">
+            </div>
+
+            <!-- Submit Action -->
+            <button type="submit"
+                class="w-full bg-white text-black hover:bg-neutral-200 font-medium rounded-lg px-4 py-2.5 mt-2 transition-colors text-sm">
+                Sign Up
+            </button>
+        </form>
+
+        <!-- Login Redirect -->
+        <div class="mt-6 text-center text-sm text-neutral-400">
+            Don't you have an account?
+
+            <a
+                href="{% url 'register' %}"
+                class="text-white hover:underline focus:outline-none focus:underline transition-all"
+            >
+                Sign Up
+            </a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Third-Party Apps
     "oauth2_provider",
+    "rest_framework",
     # First-Party Apps
     "accounts",
 ]
@@ -65,7 +66,7 @@ ROOT_URLCONF = "config.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [BASE_DIR / "templates"],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -113,6 +114,9 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = "/accounts/login/"
+LOGIN_REDIRECT_URL = "/"
+LOGOUT_REDIRECT_URL = "/accounts/login/"
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.1/topics/i18n/
@@ -139,4 +143,48 @@ MAILERS = {
     "default": {
         "BACKEND": "django.core.mail.backends.console.EmailBackend",
     },
+}
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "oauth2_provider.contrib.rest_framework.OAuth2Authentication",
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [
+        "rest_framework.permissions.IsAuthenticated",
+    ],
+}
+
+OAUTH2_PROVIDER = {
+    # Scopes
+    "SCOPES": {
+        "read:firstname": "Read your first name",
+        "read:lastname": "Read your last name",
+        "read:username": "Read your username",
+        "read:email": "Read your email",
+        "read:bio": "Read your biography",
+        "read:date_joined": "Read your Shitsoft join time",
+        "read:last_login": "Read your last login time",
+    },
+    "DEFAULT_SCOPES": [
+        "read:firstname",
+        "read:lastname",
+        "read:username",
+        "read:bio",
+    ],
+    # Grant types
+    "OAUTH2_GRANT_TYPES_SUPPORTED": [
+        "authorization_code",
+        "refresh_token",
+    ],
+    "OAUTH2_RESPONSE_TYPES_SUPPORTED": [
+        "code",
+    ],
+    # PKCE
+    "PKCE_REQUIRED": True,
+    # Token expiration
+    "ACCESS_TOKEN_EXPIRE_SECONDS": 900,  # 15 dakika
+    "AUTHORIZATION_CODE_EXPIRE_SECONDS": 300,  # 5 dakika
+    "REFRESH_TOKEN_EXPIRE_SECONDS": 60 * 60 * 24 * 30,  # 30 gün
+    # Refresh token rotation
+    "ROTATE_REFRESH_TOKEN": True,
 }

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up | ShitSoft Auth</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0a0a0a] text-gray-200 min-h-screen flex items-center justify-center p-4 antialiased">
+
+    <div class="w-full max-w-sm bg-[#121212] border border-neutral-800 rounded-xl shadow-2xl p-8">
+
+        <!-- Header -->
+        <div class="mb-8 text-center">
+            <h1 class="text-2xl font-semibold tracking-tight text-white">Sign Up - ShitSoft</h1>
+            <p class="text-sm text-neutral-400 mt-1.5">Join the ShitSoft ecosystem</p>
+        </div>
+
+        <!-- Form -->
+        <form method="post" action="" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Error Handling -->
+            {% if form.errors %}
+                <div class="bg-red-950/30 border border-red-900/50 rounded-lg p-3 text-sm text-red-400 mb-4">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <p>• {{ error }}</p>
+                        {% endfor %}
+                    {% endfor %}
+
+                    {% for error in form.non_field_errors %}
+                        <p>• {{ error }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+            <!-- Username Field -->
+            <div class="space-y-1.5">
+                <label for="id_username" class="block text-sm font-medium text-neutral-300">
+                    Username
+                </label>
+
+                <input
+                    type="text"
+                    name="username"
+                    id="id_username"
+                    value="{{ form.username.value|default:'' }}"
+                    required
+                    autofocus
+                    autocomplete="username"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm placeholder-neutral-600"
+                >
+            </div>
+
+            <!-- Email Field -->
+            <div class="space-y-1.5">
+                <label for="id_email" class="block text-sm font-medium text-neutral-300">
+                    E-Mail
+                </label>
+
+                <input
+                    type="email"
+                    name="email"
+                    id="id_email"
+                    value="{{ form.email.value|default:'' }}"
+                    required
+                    autocomplete="email"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm placeholder-neutral-600"
+                >
+            </div>
+
+            <!-- Password Field -->
+            <div class="space-y-1.5">
+                <label for="id_password" class="block text-sm font-medium text-neutral-300">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password"
+                    id="id_password"
+                    required
+                    autocomplete="new-password"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm"
+                >
+            </div>
+
+            <!-- Password Confirmation Field -->
+            <div class="space-y-1.5">
+                <label for="id_password_confirm" class="block text-sm font-medium text-neutral-300">
+                    Verify Password
+                </label>
+
+                <input
+                    type="password"
+                    name="password_confirm"
+                    id="id_password_confirm"
+                    required
+                    autocomplete="new-password"
+                    class="w-full bg-[#1a1a1a] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm"
+                >
+            </div>
+
+            <!-- Submit Action -->
+            <button
+                type="submit"
+                class="w-full bg-white text-black hover:bg-neutral-200 font-medium rounded-lg px-4 py-2.5 mt-4 transition-colors text-sm"
+            >
+                Sign Up
+            </button>
+        </form>
+
+        <!-- Login Redirect -->
+        <div class="mt-6 text-center text-sm text-neutral-400">
+            Do you already have an account?
+
+            <a
+                href="{% url 'login' %}"
+                class="text-white hover:underline focus:outline-none focus:underline transition-all"
+            >
+                Log in
+            </a>
+        </div>
+
+    </div>
+
+</body>
+</html>
