@@ -1,8 +1,11 @@
+import json
+
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
+from oauth2_provider.models import get_application_model
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
@@ -66,5 +69,34 @@ class SettingsView(APIView):
             "account/settings.html",
             {
                 "form": form,
+            },
+        )
+
+
+@method_decorator(login_required, name="dispatch")
+class UrlBuilderView(APIView):
+    authentication_classes = [SessionAuthentication]
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        Application = get_application_model()
+        apps = Application.objects.filter(user=request.user)
+
+        apps_data = []
+        for app in apps:
+            first_redirect = app.redirect_uris.split()[0] if app.redirect_uris else ""
+            apps_data.append(
+                {
+                    "id": app.client_id,
+                    "name": app.name,
+                    "redirect": first_redirect,
+                }
+            )
+
+        return render(
+            request,
+            "oauth2_provider/url_builder.html",
+            {
+                "apps_json": json.dumps(apps_data),
             },
         )

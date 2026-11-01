@@ -180,7 +180,7 @@ OAUTH2_PROVIDER = {
         "code",
     ],
     # PKCE
-    "PKCE_REQUIRED": True,
+    "PKCE_REQUIRED": False,
     # Token expiration
     "ACCESS_TOKEN_EXPIRE_SECONDS": 900,  # 15 dakika
     "AUTHORIZATION_CODE_EXPIRE_SECONDS": 300,  # 5 dakika

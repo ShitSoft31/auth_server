@@ -1,0 +1,316 @@
+{% extends "oauth2_provider/base.html" %}
+
+{% block title %}URL Builder | Applications{% endblock %}
+{% block page_title %}OAuth2 URL Builder{% endblock %}
+{% block page_description %}Generate authorization URLs on the fly for your applications. Supports PKCE out of the box.{% endblock %}
+
+{% block content %}
+    <div class="w-full space-y-6">
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+            <!-- Sol Taraf: Ayarlar (Form) -->
+            <div class="lg:col-span-7 space-y-6">
+                <div class="bg-[#1a1a1a] border border-neutral-800 rounded-xl p-6 shadow-sm">
+                    <h3 class="text-sm font-semibold text-white uppercase tracking-wider mb-6">Configuration</h3>
+
+                    <!-- App Selection -->
+                    <div class="mb-5">
+                        <label for="appSelect" class="block text-sm font-medium text-neutral-300 mb-1.5">Select Application</label>
+                        <select id="appSelect" class="w-full bg-[#121212] border border-neutral-700 text-white rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm appearance-none cursor-pointer">
+                            <option value="">-- Choose an app --</option>
+                            <!-- JS ile doldurulacak -->
+                        </select>
+                    </div>
+
+                    <!-- Redirect URI -->
+                    <div class="mb-5">
+                        <label for="redirectUri" class="block text-sm font-medium text-neutral-300 mb-1.5">Redirect URI</label>
+                        <input type="url" id="redirectUri" class="w-full bg-[#121212] border border-neutral-700 text-neutral-300 font-mono rounded-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 transition-colors sm:text-sm" placeholder="https://...">
+                    </div>
+
+                    <!-- State Parameter -->
+                    <div class="mb-5">
+                        <label for="stateParam" class="block text-sm font-medium text-neutral-300 mb-1.5">State (Security)</label>
+                        <div class="flex">
+                            <input type="text" id="stateParam" class="flex-1 bg-[#121212] border border-neutral-700 text-neutral-300 font-mono rounded-l-lg px-3.5 py-2.5 focus:outline-none focus:border-neutral-500 focus:ring-1 focus:ring-neutral-500 sm:text-sm">
+                            <button type="button" id="btnRefreshState" class="px-3 py-2 bg-neutral-800 border border-l-0 border-neutral-700 rounded-r-lg text-neutral-400 hover:text-white hover:bg-neutral-700 transition-colors focus:outline-none">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Scopes -->
+                    <div class="mb-5">
+                        <label class="block text-sm font-medium text-neutral-300 mb-3">Scopes</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3" id="scopeContainer">
+                            <!-- Django'dan aldığımız scope'lar -->
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:firstname" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:firstname</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:lastname" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:lastname</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:username" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:username</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:email" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:email</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:bio" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:bio</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:date_joined" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:date_joined</span>
+                            </label>
+                            <label class="flex items-center space-x-3 cursor-pointer group">
+                                <input type="checkbox" value="read:last_login" class="scope-cb w-4 h-4 rounded border-neutral-700 text-neutral-300 focus:ring-neutral-500 bg-[#121212]">
+                                <span class="text-sm text-neutral-400 group-hover:text-neutral-200 transition-colors">read:last_login</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- PKCE Toggle -->
+                    <div class="pt-4 border-t border-neutral-800 flex items-center justify-between">
+                        <div>
+                            <h4 class="text-sm font-medium text-white">Enable PKCE (Recommended)</h4>
+                            <p class="text-xs text-neutral-500 mt-1">Generates code_challenge and code_challenge_method (S256)</p>
+                        </div>
+                        <button type="button" id="pkceToggle" class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-green-500 transition-colors duration-200 ease-in-out focus:outline-none">
+                            <span id="pkceToggleDot" class="translate-x-5 pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- Sağ Taraf: Sonuç (URL ve Verifier) -->
+            <div class="lg:col-span-5 space-y-6">
+                <!-- Generated URL -->
+                <div class="bg-[#1a1a1a] border border-neutral-800 rounded-xl overflow-hidden shadow-sm">
+                    <div class="px-6 py-4 border-b border-neutral-800 bg-[#151515] flex justify-between items-center">
+                        <h3 class="text-sm font-semibold text-white uppercase tracking-wider">Generated URL</h3>
+                        <a id="btnOpenUrl" href="#" target="_blank" class="text-xs text-neutral-400 hover:text-white transition-colors flex items-center">
+                            Test Link <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                        </a>
+                    </div>
+                    <div class="p-6">
+                        <textarea id="resultUrl" rows="6" readonly class="w-full bg-[#111] border border-neutral-800 text-green-400 font-mono rounded-lg px-3.5 py-3 text-sm focus:outline-none resize-none break-all"></textarea>
+                        <button type="button" id="btnCopyUrl" class="mt-3 w-full inline-flex items-center justify-center px-4 py-2 text-sm font-medium text-black bg-white rounded-lg hover:bg-neutral-200 transition-colors shadow-sm focus:outline-none">
+                            Copy URL
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Generated PKCE Verifier (If enabled) -->
+                <div id="verifierContainer" class="bg-blue-950/20 border border-blue-900/30 rounded-xl p-6 shadow-sm">
+                    <div class="flex items-start mb-3">
+                        <svg class="w-5 h-5 text-blue-500 mr-2 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <div>
+                            <h4 class="text-sm font-semibold text-blue-400">PKCE Code Verifier</h4>
+                            <p class="text-xs text-blue-300/70 mt-1">You will need this string to exchange your authorization code for an access token later.</p>
+                        </div>
+                    </div>
+                    <div class="relative">
+                        <input type="text" id="codeVerifier" readonly class="w-full bg-[#0a0a0a] border border-blue-900/50 text-blue-300 font-mono rounded-lg px-3.5 py-2 text-xs focus:outline-none pr-12">
+                        <button type="button" id="btnCopyVerifier" class="absolute right-2 top-1.5 text-blue-500 hover:text-blue-300 transition-colors p-1" title="Copy Verifier">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </button>
+                    </div>
+                    <button type="button" id="btnRefreshPKCE" class="mt-3 text-xs text-blue-500 hover:text-blue-400 transition-colors underline-offset-2 hover:underline">
+                        Generate new PKCE pair
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // --- 1. DJANGO'DAN GELEN VERİLER ---
+    // Views.py'den bu veriyi JSON formatında göndermen gerekiyor.
+    // Örnek: context['apps_json'] = json.dumps([{'id': app.client_id, 'name': app.name, 'redirect': app.redirect_uris.split()[0]} for app in request.user.oauth2_provider_application.all()])
+    const appsData = {{ apps_json|safe|default:"[]" }};
+    const authorizeEndpoint = window.location.origin + "{% url 'oauth2_provider:authorize' %}";
+
+    // --- 2. DOM ELEMENTLERİ ---
+    const appSelect = document.getElementById('appSelect');
+    const redirectUriInput = document.getElementById('redirectUri');
+    const stateInput = document.getElementById('stateParam');
+    const resultUrl = document.getElementById('resultUrl');
+    const scopeCbs = document.querySelectorAll('.scope-cb');
+
+    const pkceToggle = document.getElementById('pkceToggle');
+    const pkceToggleDot = document.getElementById('pkceToggleDot');
+    const verifierContainer = document.getElementById('verifierContainer');
+    const codeVerifierInput = document.getElementById('codeVerifier');
+
+    let isPkceEnabled = true;
+    let currentChallenge = "";
+    let currentVerifier = "";
+
+    // --- 3. YARDIMCI FONKSİYONLAR ---
+    const generateRandomString = (length) => {
+        const array = new Uint32Array(length);
+        window.crypto.getRandomValues(array);
+        return Array.from(array, dec => ('0' + dec.toString(16)).substr(-2)).join('').substr(0, length);
+    };
+
+    const generateState = () => {
+        stateInput.value = generateRandomString(12);
+        buildUrl();
+    };
+
+    // --- PKCE (SHA256 & Base64URL) ---
+    function base64urlencode(buffer) {
+        let binary = '';
+        const bytes = new Uint8Array(buffer);
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return window.btoa(binary)
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '');
+    }
+
+    async function generatePKCE() {
+        // Generate random verifier
+        const verifier = generateRandomString(43); // 43-128 chars
+
+        // Hash it with SHA-256
+        const encoder = new TextEncoder();
+        const data = encoder.encode(verifier);
+        const hash = await window.crypto.subtle.digest('SHA-256', data);
+
+        // Base64Url Encode
+        const challenge = base64urlencode(hash);
+
+        currentVerifier = verifier;
+        currentChallenge = challenge;
+        codeVerifierInput.value = verifier;
+
+        buildUrl();
+    }
+
+    // --- 4. ANA URL OLUŞTURUCU ---
+    const buildUrl = () => {
+        if (!appSelect.value) {
+            resultUrl.value = "Please select an application first.";
+            return;
+        }
+
+        const url = new URL(authorizeEndpoint);
+        url.searchParams.append('response_type', 'code');
+        url.searchParams.append('client_id', appSelect.value);
+
+        if (redirectUriInput.value.trim()) {
+            url.searchParams.append('redirect_uri', redirectUriInput.value.trim());
+        }
+
+        if (stateInput.value.trim()) {
+            url.searchParams.append('state', stateInput.value.trim());
+        }
+
+        const selectedScopes = Array.from(scopeCbs).filter(cb => cb.checked).map(cb => cb.value);
+        if (selectedScopes.length > 0) {
+            url.searchParams.append('scope', selectedScopes.join(' '));
+        }
+
+        if (isPkceEnabled && currentChallenge) {
+            url.searchParams.append('code_challenge', currentChallenge);
+            url.searchParams.append('code_challenge_method', 'S256');
+        }
+
+        // JS URL objesi space karakterini + yapar, DOT genelde %20 sever, temizleyelim:
+        const finalUrlStr = url.toString().replace(/\+/g, '%20');
+
+        resultUrl.value = finalUrlStr;
+        document.getElementById('btnOpenUrl').href = finalUrlStr;
+    };
+
+
+    // --- 5. EVENT LISTENERS ---
+
+    // Uygulama listesini doldur
+    if(appsData && appsData.length > 0){
+        appsData.forEach(app => {
+            const opt = document.createElement('option');
+            opt.value = app.id;
+            opt.textContent = app.name;
+            // dataya redirect uri'yi da gömelim
+            opt.dataset.redirect = app.redirect || '';
+            appSelect.appendChild(opt);
+        });
+    }
+
+    appSelect.addEventListener('change', (e) => {
+        const selectedOption = e.target.options[e.target.selectedIndex];
+        if (selectedOption.dataset.redirect) {
+            redirectUriInput.value = selectedOption.dataset.redirect;
+        } else {
+            redirectUriInput.value = '';
+        }
+        buildUrl();
+    });
+
+    redirectUriInput.addEventListener('input', buildUrl);
+    stateInput.addEventListener('input', buildUrl);
+    scopeCbs.forEach(cb => cb.addEventListener('change', buildUrl));
+
+    document.getElementById('btnRefreshState').addEventListener('click', generateState);
+    document.getElementById('btnRefreshPKCE').addEventListener('click', generatePKCE);
+
+    // PKCE Toggle Animasyon ve Mantığı
+    pkceToggle.addEventListener('click', () => {
+        isPkceEnabled = !isPkceEnabled;
+        if(isPkceEnabled) {
+            pkceToggle.classList.replace('bg-neutral-600', 'bg-green-500');
+            pkceToggleDot.classList.replace('translate-x-0', 'translate-x-5');
+            verifierContainer.classList.remove('hidden');
+            if(!currentChallenge) generatePKCE();
+            else buildUrl();
+        } else {
+            pkceToggle.classList.replace('bg-green-500', 'bg-neutral-600');
+            pkceToggleDot.classList.replace('translate-x-5', 'translate-x-0');
+            verifierContainer.classList.add('hidden');
+            buildUrl();
+        }
+    });
+
+    // Copy URL
+    document.getElementById('btnCopyUrl').addEventListener('click', (e) => {
+        resultUrl.select();
+        document.execCommand('copy');
+        const btn = e.target;
+        const originalText = btn.innerHTML;
+        btn.innerHTML = `<svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> Copied!`;
+        setTimeout(() => btn.innerHTML = originalText, 2000);
+    });
+
+    // Copy Verifier
+    document.getElementById('btnCopyVerifier').addEventListener('click', (e) => {
+        codeVerifierInput.select();
+        document.execCommand('copy');
+        // İkonu tik yapalım geçici
+        const btn = document.getElementById('btnCopyVerifier');
+        btn.innerHTML = `<svg class="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>`;
+        setTimeout(() => {
+            btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>`;
+        }, 2000);
+    });
+
+    // Init
+    generateState();
+    generatePKCE();
+
+</script>
+{% endblock %}

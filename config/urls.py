@@ -18,8 +18,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 
+from accounts.views import UrlBuilderView
+
 urlpatterns = [
     # Third-Party Urls
+    path("oauth/url-builder/", UrlBuilderView.as_view(), name="url-builder"),
     path("oauth/", include("oauth2_provider.urls", namespace="oauth2_provider")),
     # First-Party Urls
     path("admin/", admin.site.urls),
