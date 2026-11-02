@@ -7,22 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from oauth2_provider.models import get_application_model
 
-from rest_framework.response import Response
-from rest_framework import status
 from rest_framework.authentication import SessionAuthentication
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.views import APIView
 
 from .forms import RegisterForm, SettingsForm
-
-from .serializers import MeSerializer
-
-
-class MeView(APIView):
-    def post(self, request):
-        serializer = MeSerializer(request.user, context={"request": request})
-
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class RegisterView(APIView):
@@ -48,7 +37,7 @@ class RegisterView(APIView):
     def _render_form(self, request, form):
         return render(
             request,
-            "registration/register.html",
+            "accounts/register.html",
             {
                 "form": form,
                 "next": self._get_next_url(request),
@@ -78,7 +67,7 @@ class SettingsView(APIView):
     def _render_form(self, request, form):
         return render(
             request,
-            "account/settings.html",
+            "accounts/settings.html",
             {
                 "form": form,
             },

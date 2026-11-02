@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "rest_framework",
     # First-Party Apps
     "accounts",
+    "api",
 ]
 
 AUTH_USER_MODEL = "accounts.User"
