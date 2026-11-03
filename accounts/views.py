@@ -96,7 +96,7 @@ class UrlBuilderView(APIView):
 
         return render(
             request,
-            "oauth2_provider/url_builder.html",
+            "accounts/url_builder.html",
             {
                 "apps_json": json.dumps(apps_data),
             },
