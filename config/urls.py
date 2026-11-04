@@ -24,6 +24,6 @@ urlpatterns = [
     # First-Party Urls
     path("admin/", admin.site.urls),
     path("", include("django.contrib.auth.urls")),
-    path("api/v1/", include("api.urls")),
+    path("api/", include("api.urls")),
     path("", include("accounts.urls")),
 ]
